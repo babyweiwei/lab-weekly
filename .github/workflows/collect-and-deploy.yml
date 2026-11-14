@@ -47,12 +47,16 @@ jobs:
         run: |
           git config user.name "lab-weekly-bot"
           git config user.email "lab-weekly-bot@users.noreply.github.com"
-          git add data
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: 更新汇报汇总 [skip ci]"
-            git push
+          if [ -d data ]; then
+            git add data
+            if ! git diff --staged --quiet; then
+              git commit -m "chore: 更新汇报汇总 [skip ci]"
+              git push
+            else
+              echo "汇总无变化"
+            fi
           else
-            echo "汇总无变化"
+            echo "还没有 data 目录，跳过提交"
           fi
 
       - name: 写入运行摘要

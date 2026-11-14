@@ -48,7 +48,6 @@ jobs:
           git config user.name "lab-weekly-bot"
           git config user.email "lab-weekly-bot@users.noreply.github.com"
           git add -A
-          git add ':!.github/workflows'
           if ! git diff --cached --quiet; then
             git commit -m "chore: 导入项目文件"
             git push
