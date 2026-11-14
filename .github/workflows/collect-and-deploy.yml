@@ -1,7 +1,8 @@
-name: 汇总并发布看板
+name: 汇总学生汇报
 
 # 每周一 09:00（北京时间）自动汇总；也可手动 Run workflow
-# 首次部署会自动创建 Pages 站点（configure-pages enablement）
+# Pages 由 main 分支直接发布（Build and deployment → Deploy from a branch），
+# 所以这里只负责「汇总 + 提交数据」，提交后页面自动刷新。
 on:
   schedule:
     - cron: '0 1 * * 1'
@@ -17,15 +18,13 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: weekly-collect
   cancel-in-progress: false
 
 jobs:
-  build:
+  collect:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +50,7 @@ jobs:
           if [ -d data ]; then
             git add data
             if ! git diff --staged --quiet; then
-              git commit -m "chore: 更新汇报汇总 [skip ci]"
+              git commit -m "chore: 更新汇报汇总"
               git push
             else
               echo "汇总无变化"
@@ -63,21 +62,3 @@ jobs:
       - name: 写入运行摘要
         if: ${{ always() }}
         run: node scripts/summary-to-step.mjs
-
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
