@@ -1,6 +1,7 @@
 name: 汇总并发布看板
 
-# 每周一 09:00（北京时间）自动汇总一次；也可以手动点「Run workflow」
+# 每周一 09:00（北京时间）自动汇总；也可手动 Run workflow
+# 首次部署会自动创建 Pages 站点（configure-pages enablement）
 on:
   schedule:
     - cron: '0 1 * * 1'
