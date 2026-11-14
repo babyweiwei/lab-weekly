@@ -1,0 +1,48 @@
+name: 提交检查
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验目录与文件
+        shell: bash
+        run: |
+          echo "## 本周汇报检查" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| 目录 | 汇报文件 | 进展说明 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          shopt -s nullglob
+          for dir in */; do
+            d="${dir%/}"
+            [ -d "$d" ] || continue
+            case "$d" in
+              .*|.github|docs|node_modules) continue ;;
+            esac
+
+            if ! printf '%s' "$d" | grep -Eq '^[0-9]{4}-W[0-9]{2}$'; then
+              echo "::warning file=$d::目录名 $d 不符合 YYYY-Wxx 格式，不会被看板统计（例如 2026-W46）"
+              continue
+            fi
+
+            files=$(ls "$d" 2>/dev/null | grep -Ei '\.(pptx|ppt|pdf|key)$' | head -5 | tr '\n' ' ')
+            readme=$(ls "$d" 2>/dev/null | grep -Eix 'readme\.md' | head -1)
+
+            if [ -z "$files" ]; then
+              echo "::warning file=$d::目录 $d 里没有汇报文件（.pptx/.ppt/.pdf/.key）"
+            fi
+            if [ -z "$readme" ]; then
+              echo "::notice file=$d::目录 $d 建议加一个 README.md，老师会直接看里面的进展说明"
+            fi
+
+            echo "| $d | ${files:-—} | ${readme:-缺} |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "提示：截止时间默认每周日 23:59，超时看板会标「迟交」。" >> "$GITHUB_STEP_SUMMARY"

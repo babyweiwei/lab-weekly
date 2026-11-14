@@ -1,0 +1,78 @@
+name: 汇总并发布看板
+
+# 每周一 09:00（北京时间）自动汇总一次；也可以手动点「Run workflow」
+on:
+  schedule:
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 汇总学生仓库
+        if: ${{ vars.ORG != '' || vars.ROSTER != '' }}
+        env:
+          ORG: ${{ vars.ORG }}
+          ORG_READ_TOKEN: ${{ secrets.ORG_READ_TOKEN }}
+          REPO_PREFIX: ${{ vars.REPO_PREFIX }}
+          ROSTER: ${{ vars.ROSTER }}
+          WEEKS: 24
+        run: node scripts/collect.mjs
+
+      - name: 提交数据变化
+        run: |
+          git config user.name "lab-weekly-bot"
+          git config user.email "lab-weekly-bot@users.noreply.github.com"
+          git add data
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: 更新汇报汇总 [skip ci]"
+            git push
+          else
+            echo "汇总无变化"
+          fi
+
+      - name: 写入运行摘要
+        if: ${{ always() }}
+        run: node scripts/summary-to-step.mjs
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
