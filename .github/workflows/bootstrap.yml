@@ -1,0 +1,58 @@
+name: bootstrap-files
+
+# 一次性使用：把项目文件按原路径写入仓库，完成后可删除本文件
+on:
+  push:
+    paths:
+      - '.github/workflows/bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 下载并写入文件
+        run: |
+          set -eu
+          mkdir -p css js scripts .github/workflows student-template/.github/workflows student-template/2026-W46 docs tests
+          wget -qO index.html "https://aka.doubaocdn.com/s/UNVU6YjNHF"
+          wget -qO css/style.css "https://aka.doubaocdn.com/s/2HmYc40GNh"
+          wget -qO js/app.js "https://aka.doubaocdn.com/s/UYvbkQtuen"
+          wget -qO js/demo.js "https://aka.doubaocdn.com/s/BVHE63pvtc"
+          wget -qO js/pptx.js "https://aka.doubaocdn.com/s/qUSw6ZECYP"
+          wget -qO scripts/collect.mjs "https://aka.doubaocdn.com/s/IdBpVVndSA"
+          wget -qO scripts/summary-to-step.mjs "https://aka.doubaocdn.com/s/kHIgT9N9L4"
+          wget -qO .github/workflows/collect-and-deploy.yml "https://aka.doubaocdn.com/s/ftqBOKtdk1"
+          wget -qO student-template/README.md "https://aka.doubaocdn.com/s/agtHk6rtqP"
+          wget -qO student-template/2026-W46/README.md "https://aka.doubaocdn.com/s/Gzv9pcjoPE"
+          wget -qO student-template/.github/workflows/check-submission.yml "https://aka.doubaocdn.com/s/lPZEHa10Tg"
+          wget -qO README.md "https://aka.doubaocdn.com/s/PkUJSgpc7a"
+          wget -qO roster.example.json "https://aka.doubaocdn.com/s/MxZt2U0ohs"
+          wget -qO .gitignore "https://aka.doubaocdn.com/s/hDaBVhff6E"
+          wget -qO package-lock.json "https://aka.doubaocdn.com/s/ZXBOBYny7r"
+          wget -qO docs/部署指南.md "https://aka.doubaocdn.com/s/0LdjQ03nvZ"
+          wget -qO docs/调研报告.md "https://aka.doubaocdn.com/s/RPLZc7A1e5"
+          wget -qO docs/preview.png "https://aka.doubaocdn.com/s/iVBVZJXWZC"
+          wget -qO tests/render-test.mjs "https://aka.doubaocdn.com/s/6Bfd20u5sH"
+          wget -qO tests/collect-test.mjs "https://aka.doubaocdn.com/s/FC9o2LU5JM"
+          wget -qO tests/pptx-test.mjs "https://aka.doubaocdn.com/s/2Phz5W5fWi"
+          wget -qO tests/serve.mjs "https://aka.doubaocdn.com/s/fcpWPVNh8s"
+          wget -qO tests/test.pptx "https://aka.doubaocdn.com/s/I96kisd3NY"
+          ls -R | head -50
+
+      - name: 提交
+        run: |
+          git config user.name "lab-weekly-bot"
+          git config user.email "lab-weekly-bot@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 导入项目文件"
+            git push
+          else
+            echo "没有变化"
+          fi
