@@ -1,0 +1,4 @@
+[
+  { "name": "张三", "login": "zhangsan", "repo": "zhangsan/weekly" },
+  { "name": "李四", "login": "lisi", "repo": "lab-weekly/weekly-lisi" }
+]
