@@ -71,7 +71,7 @@
       var past = rows.filter(function (r) { return r.state === 'past'; });
       var gotTotal = rows.reduce(function (n, r) { return n + r.got; }, 0);
       $('stat').textContent = '本学期 ' + S.total + ' 周（' + rows[0].wk + ' → ' + rows[rows.length - 1].wk + '）· 已过 ' +
-        past.length + ' 周 · 索引内累计材料 ' + gotTotal + ' 份 · 应交 ' + S.rosterSize + ' 人/周';
+        past.length + ' 周 · 索引内累计材料 ' + gotTotal + ' 份 · 应交 ' + S.roster.length + ' 人/周';
 
       var html = rows.map(function (r) {
         var cls = 'row ' + r.state;
