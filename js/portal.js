@@ -51,13 +51,20 @@
     return Math.floor(h / 24) + ' 天后截止';
   }
 
-  function link(id, url) {
+  function link(id, url, fallback) {
     var el = $(id);
     if (!el) return;
     if (url) {
       el.href = url;
       el.classList.remove('disabled');
       el.removeAttribute('aria-disabled');
+      el.title = '';
+    } else if (fallback) {
+      el.href = fallback;
+      el.classList.remove('disabled');
+      el.removeAttribute('aria-disabled');
+      el.classList.add('fallback');
+      el.title = '管理员还没填腾讯文档链接，先带你到腾讯文档首页';
     } else {
       el.href = '#';
       el.classList.add('disabled');
@@ -71,7 +78,7 @@
     if (!idx || !idx.files) { box.innerHTML = '<p class="muted">索引还没建。</p>'; return; }
     var list = idx.files.filter(function (f) { return f.week === weekKey; });
     if (!list.length) {
-      box.innerHTML = '<p class="muted">本周还没有可读的材料（索引里没有校验过的 PPT 文本）。后台文件在腾讯文档里照常可看。</p>';
+      box.innerHTML = '<p class="muted">本周还没有可读的材料（索引里没有校对过的 PPT 文本）。后台文件在腾讯文档里照常可看。</p>';
       return;
     }
     var html = '<ul class="wk">';
@@ -115,12 +122,12 @@
         '　超过 ' + (cfg['提交规范']['单文件上限MB'] || 10) + 'MB 先存 PDF';
 
       var links = cfg['链接'] || {};
-      link('l-folder', links['本周文件夹']);
-      link('l-form', links['进展收集表']);
-      link('l-minutes', links['纪要']);
+      link('l-folder', links['本周文件夹'], 'https://docs.qq.com/');
+      link('l-form', links['进展收集表'], 'https://docs.qq.com/');
+      link('l-minutes', links['纪要'], 'https://docs.qq.com/');
       link('l-search', links['检索页'] || 'search.html');
       link('l-config', links['参数配置'] || CONFIG_URL);
-      $('folder-name').textContent = links['本周文件夹'] ? '' : '（管理员尚未填链接）';
+      $('folder-name').textContent = links['本周文件夹'] ? '' : '（未配链接，先带去腾讯文档）';
 
       var roster = (cfg['名单'] && cfg['名单']['学生']) || [];
       $('roster').innerHTML = roster.length

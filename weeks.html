@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>组会 · 学期总览</title>
+<style>
+  :root{--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--bg:#f6f8fa;--card:#fff;--blue:#0969da;--ok:#1a7f37;--warn:#9a6700;--red:#cf222e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",Helvetica,Arial,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+  #nowline{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:13.5px;margin:0 0 10px}
+  #stat{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{text-align:left;padding:10px 12px;background:#f0f3f6;color:#3a4149;font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line)}
+  tbody td{padding:9px 12px;border-bottom:1px solid #eef1f4;vertical-align:top}
+  tbody tr.now{background:#f0f7ff}
+  tbody tr.past td{color:#4b5560}
+  .wk{font-weight:600;white-space:nowrap}
+  .muted2{color:var(--muted);font-size:11.5px;font-weight:400;margin-top:2px}
+  .badge{display:inline-block;padding:1px 8px;border-radius:20px;border:1px solid var(--line);font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .badge.now{background:var(--blue);border-color:var(--blue);color:#fff}
+  .badge.past{background:#fff;color:var(--muted)}
+  .dim{color:#9aa4ae}
+  .ok{color:var(--ok)}
+  .miss{font-size:12px;max-width:220px}
+  .mini{display:inline-block;padding:2px 8px;border:1px solid var(--line);border-radius:6px;background:#f6f8fa;color:var(--fg);text-decoration:none;font-size:12px;margin-right:6px}
+  footer{margin-top:18px;color:var(--muted);font-size:12px;line-height:1.8}
+  a.top{color:var(--blue);text-decoration:none;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>组会 · 学期总览</h1>
+  <p class="sub">每一周一行：开哪天、截止几点、收了几份、谁没交、材料夹和纪要的入口。</p>
+  <div id="nowline">加载中…</div>
+  <div id="stat"></div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:110px">周次</th>
+          <th style="width:120px">组会 / 截止</th>
+          <th style="width:70px">状态</th>
+          <th style="width:70px">材料</th>
+          <th>缺交（按索引口径）</th>
+          <th style="width:130px">入口</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    「材料」和「缺交」来自文字索引 `data/index.json`——只有被索引过的 PPT 才算数，所以它反映的是"已入库"的口径，不是腾讯文档里的真实提交数。<br>
+    日期与截止时间全部由 `config/meeting.json` 推算，改配置这一页会跟着变。<br>
+    <a class="top" href="./portal.html">← 回入口页</a>　·　<a class="top" href="./search.html">搜索历史 PPT</a>
+  </footer>
+</div>
+<script src="js/weeks.js"></script>
+</body>
+</html>
